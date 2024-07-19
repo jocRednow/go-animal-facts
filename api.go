@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	// "github.com/gorilla/mux"
 )
 
 type ApiServer struct {
@@ -16,13 +17,19 @@ func NewApiServer(svc Service) *ApiServer {
 	}
 }
 
-func (s *ApiServer) Start(listenAddr string) error {
-	http.HandleFunc("/", s.handleGetCatFact)
-	return http.ListenAndServe(listenAddr, nil)
+func (s *ApiServer) Start(path string) error {
+	http.HandleFunc(path, s.handleGetFact)
+	switch path {
+	case "/cat":
+		return http.ListenAndServe(":3060", nil)
+	case "/dog":
+		return http.ListenAndServe(":3000", nil)
+	}
+	return nil
 }
 
-func (s *ApiServer) handleGetCatFact(w http.ResponseWriter, r *http.Request) {
-	fact, err := s.svc.GetCatFact(context.Background())
+func (s *ApiServer) handleGetFact(w http.ResponseWriter, r *http.Request) {
+	fact, err := s.svc.GetAnimalFact(context.Background())
 	if err != nil {
 		writeJSON(w, http.StatusUnprocessableEntity, map[string]any{"error": err.Error()})
 		return

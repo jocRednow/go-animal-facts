@@ -2,12 +2,26 @@ package main
 
 import (
 	"log"
+	"sync"
 )
 
 func main() {
-	srv := NewCatFactService("https://catfact.ninja/fact")
-	srv = NewLoggingService(srv)
+	var wg sync.WaitGroup
 
-	apiServer := NewApiServer(srv)
-	log.Fatal(apiServer.Start(":3000"))
+	animals := map[string]string{
+		"/dog": "https://dog-api.kinduff.com/api/facts?number=1",
+		"/cat": "https://catfact.ninja/fact",
+	}
+
+	for i, v := range animals {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			srv := NewAnimalFactService(v)
+			srv = NewLoggingService(srv)
+			apiServer := NewApiServer(srv)
+			log.Fatal(apiServer.Start(i))
+		}()
+	}
+	wg.Wait()
 }

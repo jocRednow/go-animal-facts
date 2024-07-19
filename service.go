@@ -7,27 +7,27 @@ import (
 )
 
 type Service interface {
-	GetCatFact(context.Context) (*CatFact, error)
+	GetAnimalFact(context.Context) (*AnimalFact, error)
 }
 
-type CatFactService struct {
+type AnimalFactService struct {
 	url string
 }
 
-func NewCatFactService(url string) Service {
-	return &CatFactService{
+func NewAnimalFactService(url string) Service {
+	return &AnimalFactService{
 		url: url,
 	}
 }
 
-func (s *CatFactService) GetCatFact(ctx context.Context) (*CatFact, error) {
+func (s *AnimalFactService) GetAnimalFact(ctx context.Context) (*AnimalFact, error) {
 	resp, err := http.Get(s.url)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	fact := &CatFact{}
+	fact := &AnimalFact{}
 	if err := json.NewDecoder(resp.Body).Decode(fact); err != nil {
 		return nil, err
 	}
