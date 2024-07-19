@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"log"
+)
 
 func main() {
-	fmt.Println("Init...")
+	srv := NewCatFactService("https://catfact.ninja/fact")
+	srv = NewLoggingService(srv)
+
+	apiServer := NewApiServer(srv)
+	log.Fatal(apiServer.Start(":3000"))
 }
